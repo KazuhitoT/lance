@@ -78,7 +78,7 @@ random_word = { version = "0.4.3", features = ["en"] }
 
 [features]
 protoc = ["dep:protobuf-src"]
-tokenizer-lindera = ["lindera", "lindera/ipadic", "lindera/ko-dic", "lindera/unidic", "lindera-tantivy"]
+tokenizer-lindera = ["lindera", "lindera-tantivy"]
 tokenizer-jieba = ["jieba-rs"]
 
 [build-dependencies]
