@@ -19,6 +19,12 @@ use jieba::JiebaTokenizerBuilder;
 #[cfg(feature = "tokenizer-lindera")]
 use lindera::LinderaTokenizerBuilder;
 
+#[cfg(feature = "tokenizer-sentencepiece")]
+mod sentencepiece;
+
+#[cfg(feature = "tokenizer-sentencepiece")]
+use sentencepiece::SentencePieceTokenizerBuilder;
+
 /// Tokenizer configs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InvertedIndexParams {
@@ -254,7 +260,7 @@ impl InvertedIndexParams {
             s if s.starts_with("lindera/") => {
                 let Some(home) = language_model_home() else {
                     return Err(Error::invalid_input(
-                        format!("unknown base tokenizer {}", self.base_tokenizer),
+                        "invalid language model home dir",
                         location!(),
                     ));
                 };
@@ -265,11 +271,21 @@ impl InvertedIndexParams {
                 let s = if s == "jieba" { "jieba/default" } else { s };
                 let Some(home) = language_model_home() else {
                     return Err(Error::invalid_input(
-                        format!("unknown base tokenizer {}", self.base_tokenizer),
+                        "invalid language model home dir",
                         location!(),
                     ));
                 };
                 jieba::JiebaBuilder::load(&home.join(s))?.build()
+            }
+            #[cfg(feature = "tokenizer-sentencepiece")]
+            s if s.starts_with("sentencepiece/") => {
+                let Some(home) = language_model_home() else {
+                    return Err(Error::invalid_input(
+                        "invalid language model home dir",
+                        location!(),
+                    ));
+                };
+                sentencepiece::SentencePieceBuilder::load(&home.join(s))?.build()
             }
             _ => Err(Error::invalid_input(
                 format!("unknown base tokenizer {}", self.base_tokenizer),

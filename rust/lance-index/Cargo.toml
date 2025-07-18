@@ -54,6 +54,7 @@ snafu.workspace = true
 tantivy.workspace = true
 lindera = { workspace = true, optional = true }
 lindera-tantivy = { workspace = true, optional = true }
+sentencepiece = { workspace = true, optional = true }
 tokio.workspace = true
 tracing.workspace = true
 tempfile.workspace = true
@@ -79,6 +80,7 @@ rstest.workspace = true
 protoc = ["dep:protobuf-src"]
 tokenizer-lindera = ["lindera", "lindera-tantivy"]
 tokenizer-jieba = ["jieba-rs"]
+tokenizer-sentencepiece = ["sentencepiece"]
 
 [build-dependencies]
 prost-build.workspace = true

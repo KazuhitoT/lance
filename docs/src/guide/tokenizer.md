@@ -1,7 +1,7 @@
 # Tokenizers
 
-Currently, Lance has built-in support for Jieba and Lindera. However, it doesn't come with its own language models.
-If tokenization is needed, you can download language models by yourself.
+Currently, Lance has built-in support for Jieba, Lindera and SentencePiece. However, it doesn't come with its own language models.
+If tokenization is needed, you can download or train language models by yourself.
 You can specify the location where the language models are stored by setting the environment variable LANCE_LANGUAGE_MODEL_HOME.
 If it's not set, the default value is
 
@@ -9,7 +9,7 @@ If it's not set, the default value is
 ${system data directory}/lance/language_models
 ```
 
-It also supports configuring user dictionaries,
+It also supports configuring user dictionaries for Jieba and Lindera,
 which makes it convenient for users to expand their own dictionaries without retraining the language models.
 
 ## Language Models of Jieba
@@ -72,6 +72,20 @@ segmenter:
     dictionary:
         # Note: in lance, the `kind` field is not supported. You need to specify the model path using the `path` field instead.
         path: /path/to/lindera/ipadic/main
+```
+
+## Language Models of SentencePiece
+
+### Preparing the Model
+
+The language model should be stored in `${LANCE_LANGUAGE_MODEL_HOME}/sentencepiece/{model name}`.
+
+### Using the Model
+
+If you stored the model in `${LANCE_LANGUAGE_MODEL_HOME}/sentencepiece/default`, you can use it as follows:
+
+```python
+ds.create_scalar_index("text", "INVERTED", base_tokenizer="sentencepiece/default")
 ```
 
 ## Create your own language model

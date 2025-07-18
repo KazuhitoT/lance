@@ -1585,6 +1585,51 @@ def test_btree_prewarm(tmp_path: Path):
     assert scan_stats.parts_loaded == 0
 
 
+def test_sentencepiece_tokenizer(tmp_path):
+    set_language_model_path()
+    data = pa.table(
+        {
+            "text": [
+                "Hello world.",
+                "I saw a girl with a telescope.",
+                "I have a pen.",
+            ],
+        }
+    )
+    ds = lance.write_dataset(data, tmp_path, mode="overwrite")
+    ds.create_scalar_index("text", "INVERTED", base_tokenizer="sentencepiece/default")
+
+    results = ds.to_table(
+        full_text_query="pen",
+        prefilter=True,
+        with_row_id=True,
+    )
+    assert len(results) == 1
+
+    results = ds.to_table(
+        full_text_query="girl",
+        prefilter=True,
+        with_row_id=True,
+    )
+    assert len(results) == 1
+
+
+def test_sentencepiece_not_found_model(tmp_path):
+    set_language_model_path()
+    data = pa.table(
+        {
+            "text": [
+                "Hello world.",
+            ],
+        }
+    )
+    ds = lance.write_dataset(data, tmp_path, mode="overwrite")
+    with pytest.raises(OSError):
+        ds.create_scalar_index(
+            "text", "INVERTED", base_tokenizer="sentencepiece/not_found"
+        )
+
+
 def test_fts_backward_v0_27_0(tmp_path: Path):
     path = (
         Path(__file__).parent.parent.parent.parent
